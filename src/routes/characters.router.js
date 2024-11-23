@@ -78,8 +78,8 @@ router.get('/characters', async (req, res, next) => {
   });
 
   /** 캐릭터 상세 조회 API **/
-  router.get("/characters/:charactersId", async (req, res, next) =>  {
-    const  characterId  = req.params.charactersId;
+  router.get("/characters/:characterId", async (req, res, next) =>  {
+    const characterId = req.params.characterId;
     const character = await prisma.characters.findFirst({ 
       where: {characterId: +characterId },
       select: {
@@ -105,9 +105,9 @@ router.get('/characters', async (req, res, next) => {
   });
 
   /** 캐릭터 삭제API **/
-  router.delete("/characters/:charactersId", authMiddleware, async (req, res, next) =>  {
+  router.delete("/characters/:characterId", authMiddleware, async (req, res, next) =>  {
     const { accountId } = req.user;
-    const  characterId  = req.params.charactersId;
+    const  characterId  = req.params.characterId;
     const character = await prisma.characters.findFirst({ where: {characterId: +characterId },});
   
     if (!character)
