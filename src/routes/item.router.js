@@ -1,6 +1,7 @@
 import express from "express";
-import { prisma } from "../utils/prisma/index.js";
 import authMiddleware from "../middlewares/auth.middleware.js";
+import { prisma } from "../utils/prisma/index.js";
+
 
 const router = express.Router();
 
@@ -65,6 +66,10 @@ router.get('/items', async (req, res, next) => {
 router.get('/items/:itemId', async (req, res, next) => {
   const { itemId } = req.params;
 
+  if (!itemId || isNaN(+itemId)) {
+    return res.status(400).json({ message: "유효하지 않은 itemId 입니다." });
+  }
+
   const item = await prisma.items.findFirst({ 
     where: { itemId: +itemId,}, 
     select: {
@@ -96,12 +101,17 @@ router.put("/items/:itemId", authMiddleware, async (req, res, next) => {
   const { itemId } = req.params;
   const { name, hp, str, price } = req.body;
 
+  if (!itemId || isNaN(+itemId)) {
+    return res.status(400).json({ message: "유효하지 않은 itemId 입니다." });
+  }
+
+  
   const item = await prisma.items.findUnique({
     where: { itemId: +itemId },
   });
 
   if (!item)
-    return res.status(404).json({ message: '아이템이 없습니다.' });
+    return res.status(404).json({ message: '아이템이 존재하지 않습니다.' });
   else if (item.accountId !== accountId)
     return res.status(401).json({ message: '해당 아이템은 당신이 만든게 아닙니다.' });
 
@@ -128,12 +138,21 @@ router.delete("/items/:itemId", authMiddleware, async (req, res, next) =>  {
   const { accountId } = req.user;
   const { itemId } = req.params;
 
+  if (!itemId || isNaN(+itemId)) {
+    return res.status(400).json({ message: "유효하지 않은 itemId 입니다." });
+  }
+
   const item = await prisma.items.findFirst({ where: { itemId: +itemId } });
 
   if (!item)
-    return res.status(404).json({ message: '아이템이 없습니다.' });
+    return res.status(404).json({ message: '아이템이 존재하지 않습니다.' });
   else if (item.accountId !== accountId)
     return res.status(401).json({ message: '해당 아이템은 당신이 만든게 아닙니다.' });
+  if (item.characterItemId) {
+    return res.status(400).json({ 
+      message: `아이템이 이미 다른 캐릭터에게 장착되어 있습니다.` 
+    });
+  }
 
   await prisma.items.delete({ where: { itemId: +itemId } });
 

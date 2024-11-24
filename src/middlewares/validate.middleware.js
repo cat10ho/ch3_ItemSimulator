@@ -71,7 +71,7 @@ export async function validateCharacterItemSlot(req, res, next) {
   next();
 }
 
-export function validateItemOwnership(req, res, next) {
+export function validateItemOwnership(req, res, next) { //애는 아이템과 인벤토리의 유효성 이후 확인 가능.
   const { item, characterInventory } = req;
 
   if (item.characterInventoryId !== characterInventory.characterInventoryId) {
@@ -82,7 +82,7 @@ export function validateItemOwnership(req, res, next) {
 
   if (item.characterItemId) {
     return res.status(400).json({ 
-      message: `아이템이 이미 다른 캐릭터 (ID: ${item.characterItemId}) 에 의해 장착되어 있습니다.` 
+      message: `아이템이 이미 다른 캐릭터에게 장착되어 있습니다.` 
     });
   }
 
