@@ -1,5 +1,8 @@
 import jwt from "jsonwebtoken";
 import { prisma } from "../utils/prisma/index.js";
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 export default async function (req, res, next) {
   try {
@@ -11,7 +14,7 @@ export default async function (req, res, next) {
     if (tokenType !== "Bearer")
       throw new Error("토큰 타입이 일치하지 않습니다.");
 
-    const decodedToken = jwt.verify(token, "custom-secret-key");
+    const decodedToken = jwt.verify(token, process.env.AUTT_SECRET_KEY);
     const accountId = decodedToken.accountId;
 
     const account = await prisma.accounts.findFirst({
