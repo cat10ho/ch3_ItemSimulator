@@ -13,7 +13,7 @@ export async function validateItem(req, res, next) {
     return res.status(404).json({ message: "아이템이 존재하지 않습니다." });
   }
 
-  req.item = item; 
+  req.item = item;
   next();
 }
 
@@ -23,19 +23,25 @@ export async function validateCharacter(req, res, next) {
   const characterId = req.params.characterId;
 
   if (!characterId || isNaN(+characterId)) {
-    return res.status(400).json({ message: "유효하지 않은 characterId 입니다." });
+    return res
+      .status(400)
+      .json({ message: "유효하지 않은 characterId 입니다." });
   }
 
-  const character = await prisma.characters.findFirst({ where: { characterId: +characterId } });
+  const character = await prisma.characters.findFirst({
+    where: { characterId: +characterId },
+  });
   if (!character) {
     return res.status(404).json({ message: "캐릭터가 존재하지 않습니다." });
   }
 
   if (character.accountId !== accountId) {
-    return res.status(401).json({ message: "이 캐릭터는 로그인된 계정과 연결되지 않았습니다." });
+    return res
+      .status(401)
+      .json({ message: "이 캐릭터는 로그인된 계정과 연결되지 않았습니다." });
   }
 
-  req.character = character; 
+  req.character = character;
   next();
 }
 
@@ -48,10 +54,12 @@ export async function validateCharacterInventory(req, res, next) {
   });
 
   if (!characterInventory) {
-    return res.status(404).json({ message: "캐릭터의 인벤토리가 존재하지 않습니다." });
+    return res
+      .status(404)
+      .json({ message: "캐릭터의 인벤토리가 존재하지 않습니다." });
   }
 
-  req.characterInventory = characterInventory; 
+  req.characterInventory = characterInventory;
   next();
 }
 
@@ -64,14 +72,17 @@ export async function validateCharacterItemSlot(req, res, next) {
   });
 
   if (!characterItem) {
-    return res.status(404).json({ message: "캐릭터의 장비 슬롯이 존재하지 않습니다." });
+    return res
+      .status(404)
+      .json({ message: "캐릭터의 장비 슬롯이 존재하지 않습니다." });
   }
 
   req.characterItem = characterItem;
   next();
 }
 
-export function validateItemOwnership(req, res, next) { //애는 아이템과 인벤토리의 유효성 이후 확인 가능.
+export function validateItemOwnership(req, res, next) {
+  //애는 아이템과 인벤토리의 유효성 이후 확인 가능.
   const { item, characterInventory } = req;
 
   if (item.characterInventoryId !== characterInventory.characterInventoryId) {
@@ -81,8 +92,8 @@ export function validateItemOwnership(req, res, next) { //애는 아이템과 �
   }
 
   if (item.characterItemId) {
-    return res.status(400).json({ 
-      message: `아이템이 이미 다른 캐릭터에게 장착되어 있습니다.` 
+    return res.status(400).json({
+      message: `아이템이 이미 다른 캐릭터에게 장착되어 있습니다.`,
     });
   }
 

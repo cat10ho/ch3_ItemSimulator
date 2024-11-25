@@ -24,19 +24,20 @@ router.put(
     const { item, character, characterInventory } = req;
 
     try {
-
       if (item.characterItemId) {
-        return res.status(400).json({ 
-          message: `아이템이 이미 다른 캐릭터에게 장착되어 있습니다.` 
+        return res.status(400).json({
+          message: `아이템이 이미 다른 캐릭터에게 장착되어 있습니다.`,
         });
       }
-    
+
       if (item.characterInventoryId) {
         return res
           .status(400)
-          .json({ message: "아이템이 이미 다른 캐릭터에게 소유되어 있습니다." });
+          .json({
+            message: "아이템이 이미 다른 캐릭터에게 소유되어 있습니다.",
+          });
       }
-      
+
       await prisma.items.update({
         data: { characterInventoryId: characterInventory.characterInventoryId }, //참조할 애를 잘
         where: {
@@ -44,11 +45,9 @@ router.put(
         },
       });
 
-      return res
-        .status(200)
-        .json({
-          data: `${character.name} 인벤토리에 ${item.name} 을 넣었습니다. `,
-        });
+      return res.status(200).json({
+        data: `${character.name} 인벤토리에 ${item.name} 을 넣었습니다. `,
+      });
     } catch (err) {
       console.error("Error updating item:", err);
       return res.status(500).json({ message: "서버 에러가 발생했습니다." });
@@ -63,7 +62,9 @@ router.get(
     const characterId = req.params.characterId;
 
     if (!characterId || isNaN(+characterId)) {
-      return res.status(400).json({ message: "유효하지 않은 characterId 입니다." });
+      return res
+        .status(400)
+        .json({ message: "유효하지 않은 characterId 입니다." });
     }
 
     const character = await prisma.characters.findFirst({
