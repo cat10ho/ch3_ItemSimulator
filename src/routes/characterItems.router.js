@@ -129,4 +129,54 @@ router.put(
   }
 );
 
+/*장착 아이템 조회 API*/ //이거 아직 안돌려봄.
+router.get(
+  "/characters/:characterId/characterItems",
+  async (req, res, next) => {
+    const characterId = req.params.characterId;
+
+    if (!characterId || isNaN(+characterId)) {
+      return res
+        .status(400)
+        .json({ message: "유효하지 않은 characterId 입니다." });
+    }
+
+    const character = await prisma.characters.findFirst({
+      where: { characterId: +characterId },
+    });
+
+    if (!character)
+      return res.status(404).json({ message: "캐릭터가 존재하지 않습니다." });
+
+    const characterItem = await prisma.characterItems.findFirst({
+      where: { characterId: +characterId },
+    });
+
+    const characterItemId = characterItem
+      ? characterItem.characterItemId
+      : null;
+
+    const items = await prisma.items.findMany({
+      where: { characterItemId: +characterItemId },
+      select: {
+        itemId: true,
+        accountId: true,
+        name: true,
+        price: true,
+        AddAbilities: {
+          select: {
+            hp: true,
+            str: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc", // 아이템을 최신순으로 정렬합니다.
+      },
+    });
+
+    return res.status(200).json({ data: items });
+  }
+);
+
 export default router;
