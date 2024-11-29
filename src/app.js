@@ -19,7 +19,7 @@ app.use(express.static(path.resolve("assets")));
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.get("/",()=>{return "안녕하세요."});
+app.get("/",(req,res)=>{return res.send("안녕하세요.")});
 app.use("/api", [
   AccountsRouter,
   CharactersRouter,
